@@ -26,6 +26,7 @@ from minitorch.operators import (
 )
 
 from .strategies import assert_close, small_floats
+
 EPS = 1e-6
 # ## Task 0.1 Basic hypothesis tests.
 
@@ -108,13 +109,13 @@ def test_sigmoid(a: float) -> None:
     * It is  strictly increasing.
     """
     # TODO: Implement for Task 0.2.
-    assert(0.0 <= sigmoid(a) <= 1.0)
+    assert 0.0 <= sigmoid(a) <= 1.0
     assert_close(1.0 - sigmoid(a), sigmoid(-a))
     assert_close(sigmoid(0.0), 0.5)
     if a > 0:
-        assert(sigmoid(-a) <= sigmoid(a))
+        assert sigmoid(-a) <= sigmoid(a)
     elif a < 0:
-        assert(sigmoid(a) <= sigmoid(-a))
+        assert sigmoid(a) <= sigmoid(-a)
 
 
 @pytest.mark.task0_2
@@ -123,7 +124,7 @@ def test_transitive(a: float, b: float, c: float) -> None:
     "Test the transitive property of less-than (a < b and b < c implies a < c)"
     # TODO: Implement for Task 0.2.
     if a < b and b < c:
-        assert(a < c)
+        assert a < c
 
 
 @pytest.mark.task0_2
@@ -154,7 +155,7 @@ def test_other() -> None:
     Write a test that ensures some other property holds for your functions.
     """
     # TODO: Implement for Task 0.2.
-    assert(True)
+    assert True
 
 
 # ## Task 0.3  - Higher-order functions

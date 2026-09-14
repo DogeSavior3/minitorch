@@ -55,7 +55,7 @@ def max(x: float, y: float) -> float:
 def is_close(x: float, y: float) -> float:
     "$f(x) = |x - y| < 1e-2$"
     # TODO: Implement for Task 0.1.
-    return int(abs(x-y) < 1e-2)
+    return int(abs(x - y) < 1e-2)
 
 
 def sigmoid(x: float) -> float:
@@ -71,7 +71,9 @@ def sigmoid(x: float) -> float:
     for stability.
     """
     # TODO: Implement for Task 0.1.
-    return (1.0) / (1.0 + math.exp(-x)) if x >= 0 else (math.exp(x)) / (1.0 + math.exp(x))
+    return (
+        (1.0) / (1.0 + math.exp(-x)) if x >= 0 else (math.exp(x)) / (1.0 + math.exp(x))
+    )
 
 
 def relu(x: float) -> float:
@@ -112,7 +114,7 @@ def inv(x: float) -> float:
 def inv_back(x: float, d: float) -> float:
     r"If $f(x) = 1/x$ compute $d \times f'(x)$"
     # TODO: Implement for Task 0.1.
-    return -d / (x ** 2)
+    return -d / (x**2)
 
 
 def relu_back(x: float, d: float) -> float:
@@ -139,10 +141,11 @@ def map(fn: Callable[[float], float]) -> Callable[[Iterable[float]], Iterable[fl
          A function that takes a list, applies `fn` to each element, and returns a
          new list
     """
+
     # TODO: Implement for Task 0.3.
     def func(ls: Iterable[float]) -> Iterable[float]:
         return [fn(x) for x in ls]
-    
+
     return func
 
 
@@ -153,7 +156,7 @@ def negList(ls: Iterable[float]) -> Iterable[float]:
 
 
 def zipWith(
-    fn: Callable[[float, float], float]
+    fn: Callable[[float, float], float],
 ) -> Callable[[Iterable[float], Iterable[float]], Iterable[float]]:
     """
     Higher-order zipwith (or map2).
@@ -168,11 +171,12 @@ def zipWith(
          applying fn(x, y) on each pair of elements.
 
     """
+
     # TODO: Implement for Task 0.3.
     def func(ls1: Iterable[float], ls2: Iterable[float]):
-        return [fn(x,y) for x, y in zip(ls1, ls2)]
-    
-    return func 
+        return [fn(x, y) for x, y in zip(ls1, ls2)]
+
+    return func
 
 
 def addLists(ls1: Iterable[float], ls2: Iterable[float]) -> Iterable[float]:
@@ -196,6 +200,7 @@ def reduce(
          $x_1 \ldots x_n$ and computes the reduction :math:`fn(x_3, fn(x_2,
          fn(x_1, x_0)))`
     """
+
     # TODO: Implement for Task 0.3.
     def func(ls: Iterable[float]):
         res = start
