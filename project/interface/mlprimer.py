@@ -2,13 +2,23 @@ import random
 
 import chalk as ch
 from chalk import (
+    ArrowOpts,
+    Linear,
+    P2,
+    Path,
     Trail,
+    V2,
+    circle,
+    concat,
     empty,
+    hstrut,
     make_path,
     place_on_path,
     rectangle,
+    text,
     unit_x,
     unit_y,
+    vstrut,
 )
 from colour import Color
 from drawing import aqua, black, blue, lightblue, lightred, white
@@ -16,7 +26,6 @@ from drawing import aqua, black, blue, lightblue, lightred, white
 import minitorch
 
 random.seed(10)
-
 s = minitorch.datasets["Simple"](10)
 spl = minitorch.datasets["Split"](10)
 
