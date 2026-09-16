@@ -4,6 +4,7 @@ Implementation of the core Tensor object for autodifferentiation.
 
 from __future__ import annotations
 
+import builtins
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
@@ -34,7 +35,8 @@ from .tensor_functions import (
 )
 
 if TYPE_CHECKING:
-    from typing import Any, Iterable, List, Optional, Sequence, Tuple, Type, Union
+    from collections.abc import Iterable, Sequence
+    from typing import Any, Union
 
     import numpy.typing as npt
 
@@ -52,8 +54,8 @@ class History:
     used to construct the current Variable.
     """
 
-    last_fn: Optional[Type[Function]] = None
-    ctx: Optional[Context] = None
+    last_fn: type[Function] | None = None
+    ctx: Context | None = None
     inputs: Sequence[Tensor] = ()
 
 
@@ -67,8 +69,8 @@ class Tensor:
     """
 
     backend: TensorBackend
-    history: Optional[History]
-    grad: Optional[Tensor]
+    history: History | None
+    grad: Tensor | None
     _tensor: TensorData
     unique_id: int
     name: str
@@ -76,9 +78,9 @@ class Tensor:
     def __init__(
         self,
         v: TensorData,
-        back: Optional[History] = None,
-        name: Optional[str] = None,
-        backend: Optional[TensorBackend] = None,
+        back: History | None = None,
+        name: str | None = None,
+        backend: TensorBackend | None = None,
     ):
         global _tensor_count
         _tensor_count += 1
@@ -181,7 +183,7 @@ class Tensor:
     def __rmul__(self, b: TensorLike) -> Tensor:
         return self * b
 
-    def all(self, dim: Optional[int] = None) -> Tensor:
+    def all(self, dim: int | None = None) -> Tensor:
         if dim is None:
             return All.apply(self.view(self.size), self._ensure_tensor(0))
         else:
@@ -207,14 +209,14 @@ class Tensor:
         x: float = self._tensor._storage[0]
         return x
 
-    def sum(self, dim: Optional[int] = None) -> Tensor:
+    def sum(self, dim: int | None = None) -> Tensor:
         "Compute the sum over dimension `dim`"
         if dim is None:
             return Sum.apply(self.contiguous().view(self.size), self._ensure_tensor(0))
         else:
             return Sum.apply(self, self._ensure_tensor(dim))
 
-    def mean(self, dim: Optional[int] = None) -> Tensor:
+    def mean(self, dim: int | None = None) -> Tensor:
         "Compute the mean over dimension `dim`"
         if dim is not None:
             return self.sum(dim) / self.shape[dim]
@@ -236,11 +238,11 @@ class Tensor:
     def __repr__(self) -> str:
         return self._tensor.to_string()
 
-    def __getitem__(self, key: Union[int, UserIndex]) -> float:
+    def __getitem__(self, key: int | UserIndex) -> float:
         key2 = (key,) if isinstance(key, int) else key
         return self._tensor.get(key2)
 
-    def __setitem__(self, key: Union[int, UserIndex], val: float) -> None:
+    def __setitem__(self, key: int | UserIndex, val: float) -> None:
         key2 = (key,) if isinstance(key, int) else key
         self._tensor.set(key2, val)
 
@@ -255,10 +257,10 @@ class Tensor:
 
     @staticmethod
     def make(
-        storage: Union[Storage, List[float]],
+        storage: Storage | list[float],
         shape: UserShape,
-        strides: Optional[UserStrides] = None,
-        backend: Optional[TensorBackend] = None,
+        strides: UserStrides | None = None,
+        backend: TensorBackend | None = None,
     ) -> Tensor:
         "Create a new tensor from data"
         return Tensor(TensorData(storage, shape, strides), backend=backend)
@@ -300,7 +302,7 @@ class Tensor:
         return Tensor.make(out._tensor._storage, self.shape, backend=self.backend)
         # END CODE CHANGE (2021)
 
-    def zeros(self, shape: Optional[UserShape] = None) -> Tensor:
+    def zeros(self, shape: UserShape | None = None) -> Tensor:
         def zero(shape: UserShape) -> Tensor:
             return Tensor.make(
                 [0.0] * int(operators.prod(shape)), shape, backend=self.backend
@@ -313,7 +315,7 @@ class Tensor:
         out._type_(self.backend)
         return out
 
-    def tuple(self) -> Tuple[Storage, Shape, Strides]:
+    def tuple(self) -> builtins.tuple[Storage, Shape, Strides]:
         return self._tensor.tuple()
 
     def detach(self) -> Tensor:
@@ -348,7 +350,7 @@ class Tensor:
         assert self.history is not None
         return self.history.inputs
 
-    def chain_rule(self, d_output: Any) -> Iterable[Tuple[Variable, Any]]:
+    def chain_rule(self, d_output: Any) -> Iterable[builtins.tuple[Variable, Any]]:
         h = self.history
         assert h is not None
         assert h.last_fn is not None
@@ -361,7 +363,7 @@ class Tensor:
             for inp, d_in in zip(h.inputs, x)
         ]
 
-    def backward(self, grad_output: Optional[Tensor] = None) -> None:
+    def backward(self, grad_output: Tensor | None = None) -> None:
         if grad_output is None:
             assert self.shape == (1,), "Must provide grad_output if non-scalar"
             grad_output = Tensor.make([1.0], (1,), backend=self.backend)
