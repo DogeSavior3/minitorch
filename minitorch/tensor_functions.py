@@ -122,7 +122,7 @@ class Sigmoid(Function):
     def backward(ctx: Context, grad_output: Tensor) -> Tensor:
         # TODO: Implement for Task 2.4.
         out = ctx.saved_values[0]
-        return grad_output * out * (1.0 - out)
+        return grad_output * out * ((-out) + 1.0)
 
 
 class ReLU(Function):
